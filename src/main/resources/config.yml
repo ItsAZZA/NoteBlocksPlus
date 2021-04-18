@@ -1,0 +1,4 @@
+particles:
+  enabled: false
+sounds:
+  COBWEB: "ENTITY_CHICKEN_EGG"

@@ -1,0 +1,8 @@
+name: NoteBlocksPlus
+version: 1.0
+main: com.itsazza.noteblocksplus.Noteblocksplus
+api-version: 1.13
+authors: [ ItsAZZA ]
+commands:
+  noteblocksplus:
+    aliases: nbp
