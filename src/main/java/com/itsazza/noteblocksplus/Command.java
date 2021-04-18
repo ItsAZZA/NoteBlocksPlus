@@ -21,8 +21,12 @@ public class Command implements CommandExecutor {
 
         Noteblocksplus plugin = Noteblocksplus.INSTANCE;
         plugin.reloadConfig();
-        plugin.loadNoteReplacements();
-        sender.sendMessage("§eReloaded config!");
+        boolean response = plugin.loadNoteReplacements();
+        if (response) {
+            sender.sendMessage("§e[NoteBlocksPlus] Reloaded config!");
+        } else {
+            sender.sendMessage("§c[NoteBlocksPlus] An error occurred reloading the config. Please check the console for more information.");
+        }
         return true;
     }
 }
