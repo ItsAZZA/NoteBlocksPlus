@@ -1,12 +1,12 @@
 package com.itsazza.noteblocksplus;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Set;
-import java.util.logging.Level;
 
 public final class Noteblocksplus extends JavaPlugin {
     public static Noteblocksplus INSTANCE;
@@ -20,26 +20,37 @@ public final class Noteblocksplus extends JavaPlugin {
         getCommand("noteblocksplus").setExecutor(new Command());
         saveDefaultConfig();
         loadNoteReplacements();
+
+        new Metrics(this, 11083);
     }
 
-    public void loadNoteReplacements() {
+    public boolean loadNoteReplacements() {
         replacements.clear();
+        boolean response = true;
 
         Set<String> keys = getConfig().getConfigurationSection("sounds").getKeys(false);
         for (String key : keys) {
             String soundName = getConfig().getString("sounds." + key);
-            Sound sound;
             Material material;
+            Sound sound;
+
+            try {
+                material = Material.valueOf(key);
+            } catch (IllegalArgumentException e) {
+                getLogger().severe("Error setting sound " + soundName + " for block " + key + ": Invalid material!");
+                response = false;
+                continue;
+            }
 
             try {
                 sound = Sound.valueOf(soundName);
-                material = Material.valueOf(key);
             } catch (IllegalArgumentException e) {
-                getLogger().log(Level.WARNING, "§cError setting sound " + soundName + " for block " + key);
-                return;
+                getLogger().severe("Error setting sound " + soundName + " for block " + key + ": Invalid sound!");
+                response = false;
+                continue;
             }
-
             replacements.put(material, sound);
         }
+        return response;
     }
 }
