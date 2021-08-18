@@ -19,7 +19,7 @@ public class Command implements CommandExecutor {
             return true;
         }
 
-        Noteblocksplus plugin = Noteblocksplus.INSTANCE;
+        Noteblocksplus plugin = Noteblocksplus.getInstance();
         plugin.reloadConfig();
         boolean response = plugin.loadNoteReplacements();
         if (response) {

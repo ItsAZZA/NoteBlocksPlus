@@ -1,5 +1,6 @@
 package com.itsazza.noteblocksplus;
 
+import com.itsazza.noteblocksplus.api.NoteBlocksPlusAPI;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -12,22 +13,22 @@ public class Event implements Listener {
     @EventHandler
     public void onNotePlay(NotePlayEvent e) {
         Block block = e.getBlock().getRelative(BlockFace.DOWN);
-        if (!Noteblocksplus.replacements.containsKey(block.getType())) return;
+        if (!Noteblocksplus.getReplacements().containsKey(block.getType())) return;
 
         Location loc = block.getLocation();
         World world = loc.getWorld();
         assert world != null;
 
-        float pitch = getNotePitch(e.getNote().getId());
-        world.playSound(loc, Noteblocksplus.replacements.get(block.getType()), 1.0F, pitch);
+        float pitch = NoteBlocksPlusAPI.getNotePitch(e.getNote().getId());
+        if (Noteblocksplus.hasSoundCategory()) {
+            world.playSound(loc, Noteblocksplus.getReplacements().get(block.getType()), SoundCategory.RECORDS, 1.0F, pitch);
+        } else {
+            world.playSound(loc, Noteblocksplus.getReplacements().get(block.getType()), 1.0F, pitch);
+        }
         e.setCancelled(true);
 
-        if (!Bukkit.getVersion().contains("1.8") && Noteblocksplus.INSTANCE.getConfig().getBoolean("particles.enabled")) {
+        if (Noteblocksplus.isParticlesEnabled()) {
             world.spawnParticle(Particle.NOTE, loc.add(0.5, 2.2, 0.5), 0, pitch, 0, 0);
         }
-    }
-
-    private float getNotePitch(float value) {
-        return 0.5f + 0.0625f * value;
     }
 }

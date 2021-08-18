@@ -1,16 +1,19 @@
 package com.itsazza.noteblocksplus;
 
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Level;
 
 public final class Noteblocksplus extends JavaPlugin {
-    public static Noteblocksplus INSTANCE;
-    public static HashMap<Material, Sound> replacements = new HashMap<>();
+    private static Noteblocksplus INSTANCE;
+    private static final HashMap<Material, String> replacements = new HashMap<>();
+    private static boolean hasSoundCategory = true;
+    private static boolean particlesEnabled = false;
 
     @Override
     public void onEnable() {
@@ -21,7 +24,31 @@ public final class Noteblocksplus extends JavaPlugin {
         saveDefaultConfig();
         loadNoteReplacements();
 
+        if (Bukkit.getVersion().contains("1.10")) {
+            hasSoundCategory = false;
+        }
+
+        if (getConfig().getBoolean("particles.enabled")) {
+            particlesEnabled = true;
+        }
+
         new Metrics(this, 11083);
+    }
+
+    public static Noteblocksplus getInstance() {
+        return INSTANCE;
+    }
+
+    public static HashMap<Material, String> getReplacements() {
+        return replacements;
+    }
+
+    public static boolean hasSoundCategory() {
+        return hasSoundCategory;
+    }
+
+    public static boolean isParticlesEnabled() {
+        return particlesEnabled;
     }
 
     public boolean loadNoteReplacements() {
@@ -32,25 +59,18 @@ public final class Noteblocksplus extends JavaPlugin {
         for (String key : keys) {
             String soundName = getConfig().getString("sounds." + key);
             Material material;
-            Sound sound;
 
             try {
                 material = Material.valueOf(key);
             } catch (IllegalArgumentException e) {
-                getLogger().severe("Error setting sound " + soundName + " for block " + key + ": Invalid material!");
+                getLogger().log(Level.SEVERE, "Error setting sound " + soundName + " for block " + key + ": Invalid material!");
                 response = false;
                 continue;
             }
 
-            try {
-                sound = Sound.valueOf(soundName);
-            } catch (IllegalArgumentException e) {
-                getLogger().severe("Error setting sound " + soundName + " for block " + key + ": Invalid sound!");
-                response = false;
-                continue;
-            }
-            replacements.put(material, sound);
+            replacements.put(material, soundName);
         }
+        getLogger().log(Level.INFO, "Added " + replacements.size() + " new sound(s) to note blocks!");
         return response;
     }
 }

@@ -1,4 +1,4 @@
 particles:
   enabled: false
 sounds:
-  COBWEB: "ENTITY_CHICKEN_EGG"
+  COBWEB: "minecraft:entity.chicken.egg"
